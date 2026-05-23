@@ -6,7 +6,7 @@ from kiteconnect import KiteConnect
 app = Flask(__name__)
 
 # ==========================================
-# YOUR API DETAILS
+# API DETAILS
 # ==========================================
 
 API_KEY = "i2c07s753rdi06u5"
@@ -29,7 +29,7 @@ def home():
     return f"""
 
     <h1>
-    Zerodha Login
+    Zerodha Token Generator
     </h1>
 
     <a href="{login_url}">
@@ -67,11 +67,11 @@ def callback():
         return f"""
 
         <h1>
-        ACCESS TOKEN
+        ACCESS TOKEN GENERATED
         </h1>
 
         <textarea
-        rows="8"
+        rows="10"
         cols="100"
         >
 {access_token}
