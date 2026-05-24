@@ -1,7 +1,10 @@
 from flask import Flask
 from flask import request
+from flask import redirect
 
 from kiteconnect import KiteConnect
+
+import os
 
 app = Flask(__name__)
 
@@ -9,9 +12,13 @@ app = Flask(__name__)
 # API DETAILS
 # ==========================================
 
-API_KEY = "i2c07s753rdi06u5"
+API_KEY = os.getenv(
+    "KITE_API_KEY"
+)
 
-API_SECRET = "i8pmxc6eij1kz07isa6qmk1br3y7nimc"
+API_SECRET = os.getenv(
+    "KITE_API_SECRET"
+)
 
 # ==========================================
 # HOME
@@ -20,23 +27,34 @@ API_SECRET = "i8pmxc6eij1kz07isa6qmk1br3y7nimc"
 @app.route("/")
 def home():
 
-    kite = KiteConnect(
-        api_key=API_KEY
-    )
-
-    login_url = kite.login_url()
-
-    return f"""
+    return """
 
     <h1>
     Zerodha Token Generator
     </h1>
 
-    <a href="{login_url}">
-    CLICK HERE TO LOGIN
+    <br>
+
+    <a href="/login">
+    LOGIN TO ZERODHA
     </a>
 
     """
+
+# ==========================================
+# LOGIN
+# ==========================================
+
+@app.route("/login")
+def login():
+
+    kite = KiteConnect(
+        api_key=API_KEY
+    )
+
+    return redirect(
+        kite.login_url()
+    )
 
 # ==========================================
 # CALLBACK
@@ -56,8 +74,11 @@ def callback():
         )
 
         data = kite.generate_session(
+
             request_token,
+
             api_secret=API_SECRET
+
         )
 
         access_token = data[
@@ -66,15 +87,12 @@ def callback():
 
         return f"""
 
-        <h1>
-        ACCESS TOKEN GENERATED
-        </h1>
+        <h2>
+        ACCESS TOKEN
+        </h2>
 
-        <textarea
-        rows="10"
-        cols="100"
-        >
-{access_token}
+        <textarea rows="8" cols="100">
+        {access_token}
         </textarea>
 
         """
@@ -83,13 +101,10 @@ def callback():
 
         return f"""
 
-        <h1>
-        ERROR
-        </h1>
-
-        <pre>
+        <h2>
+        ERROR:
         {str(e)}
-        </pre>
+        </h2>
 
         """
 
